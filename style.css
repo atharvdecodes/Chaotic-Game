@@ -1,0 +1,624 @@
+
+/* =========================================
+   CHAOS RUSH - COMBINED STYLESHEET
+   1. Chaos Effects
+   2. Victory Screen
+   3. Game Over Screen
+========================================= */
+
+
+/* =========================================
+   1. CHAOS EFFECTS
+========================================= */
+
+/* MUTANT */
+
+.chaos-mutant {
+    position: absolute;
+    bottom: 9%;
+    width: 58px;
+    height: 58px;
+    object-fit: contain;
+    z-index: 10;
+    pointer-events: none;
+}
+
+/* PIANO */
+
+.chaos-piano {
+    position: absolute;
+    width: 65px;
+    height: 65px;
+    object-fit: contain;
+    z-index: 4;
+    pointer-events: none;
+}
+
+/* SLIPPERY FLOOR */
+
+#gameArea.slippery-floor #ground {
+    background: linear-gradient(
+        90deg,
+        #8deaff,
+        #d9faff,
+        #8deaff
+    );
+
+    box-shadow: 0 -4px 12px #8deaff;
+}
+
+/* SLIPPERY PLAYER EFFECT */
+
+#player.slippery {
+    filter: drop-shadow(0 0 5px #8deaff);
+}
+
+/* CONFUSED CONTROLS EFFECT */
+
+#player.controls-reversed {
+    filter: drop-shadow(0 0 5px orange);
+}
+
+
+/* =========================================
+   2. VICTORY SCREEN
+   ORANGE PIXEL MATRIX THEME
+========================================= */
+
+.victory-screen,
+#victory-screen {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background: linear-gradient(
+        135deg,
+        #ffb347 0%,
+        #ff851b 35%,
+        #e85d04 70%,
+        #8f2d00 100%
+    );
+
+    font-family: "Courier New", monospace;
+}
+
+/* PIXELATED BACKGROUND */
+
+.pixel-background {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    opacity: 0.35;
+
+    background-image:
+        linear-gradient(
+            rgba(255, 220, 150, 0.25) 2px,
+            transparent 2px
+        ),
+        linear-gradient(
+            90deg,
+            rgba(255, 220, 150, 0.25) 2px,
+            transparent 2px
+        );
+
+    background-size: 16px 16px;
+}
+
+/* MATRIX CONTAINER */
+
+.matrix-container {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    display: flex;
+    justify-content: space-around;
+    overflow: hidden;
+    background: transparent;
+}
+
+.matrix-pattern {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: space-around;
+}
+
+/* FALLING CHARACTERS */
+
+.matrix-column {
+    position: relative;
+    top: -100%;
+    width: 20px;
+    height: 100%;
+    white-space: nowrap;
+    font-size: 16px;
+    line-height: 18px;
+    font-weight: bold;
+
+    animation: matrix-fall linear infinite;
+}
+
+.matrix-column::before {
+    content:
+        "アイウエオカキクケコサシスセソタチツテトナニヌネノABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    writing-mode: vertical-lr;
+    letter-spacing: 2px;
+
+    background: linear-gradient(
+        to bottom,
+        #ffffff 0%,
+        #fff3bd 10%,
+        #ffdc73 25%,
+        #ffb52e 45%,
+        #ff851b 65%,
+        #d94c0b 85%,
+        transparent 100%
+    );
+
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* CHARACTER VARIATIONS */
+
+.matrix-column:nth-child(odd)::before {
+    content:
+        "アイウエオカキクケコサシスセソタチツテトナニヌネノ123456789";
+}
+
+.matrix-column:nth-child(even)::before {
+    content:
+        "ガギグゲゴザジズゼドバビブABCDEFGHIJKLMNOPQRSTUVWXYZ";
+}
+
+.matrix-column:nth-child(3n)::before {
+    content:
+        "アカサタナハマヤラワイキシチニヒミリウクスツヌフムユル0987654321";
+}
+
+.matrix-column:nth-child(4n)::before {
+    content:
+        "ンヲロヨモホノトソコオレメヘネテセケエルユムフヌツスクウ";
+}
+
+.matrix-column:nth-child(5n)::before {
+    content:
+        "ガザダバパギジヂビピグズヅブプゲゼデベペゴゾドボポ123456789";
+}
+
+/* MATRIX SPEED VARIATIONS */
+
+.matrix-column:nth-child(3n) {
+    animation-duration: 2.5s;
+    animation-delay: -1.8s;
+}
+
+.matrix-column:nth-child(3n + 1) {
+    animation-duration: 3.5s;
+    animation-delay: -2.5s;
+}
+
+.matrix-column:nth-child(3n + 2) {
+    animation-duration: 4.2s;
+    animation-delay: -3s;
+}
+
+/* MATRIX FALL ANIMATION */
+
+@keyframes matrix-fall {
+    0% {
+        transform: translateY(-10%);
+        opacity: 0;
+    }
+
+    15% {
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(210%);
+        opacity: 0;
+    }
+}
+
+/* VICTORY CONTENT */
+
+.victory-content,
+#victory-screen .end-content {
+    position: relative;
+    z-index: 5;
+    text-align: center;
+    padding: 30px;
+}
+
+/* TOP TEXT */
+
+.top-text,
+#victory-screen .small-title {
+    color: #fff0bd;
+    font-size: 20px;
+    font-weight: bold;
+    letter-spacing: 9px;
+    margin-bottom: 15px;
+}
+
+/* VICTORY TITLE */
+
+.victory-content h1,
+#victory-screen h1 {
+    color: #fff4c4;
+    font-size: clamp(65px, 13vw, 150px);
+    font-weight: 1000;
+    letter-spacing: 8px;
+
+    text-shadow:
+        5px 5px 0 #a63b08,
+        9px 9px 0 #652000,
+        0 0 25px #ffb52e;
+
+    animation: victoryGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes victoryGlow {
+    from {
+        text-shadow:
+            5px 5px 0 #a63b08,
+            9px 9px 0 #652000,
+            0 0 15px #ffb52e;
+    }
+
+    to {
+        text-shadow:
+            5px 5px 0 #a63b08,
+            9px 9px 0 #652000,
+            0 0 40px #fff0a0;
+    }
+}
+
+/* DECORATIVE LINE */
+
+.victory-line {
+    width: 65%;
+    height: 5px;
+    margin: 22px auto;
+    background: #fff0bd;
+    box-shadow: 0 0 15px #ffcf63;
+}
+
+/* VICTORY SUBTITLE */
+
+#victory-screen .subtitle {
+    color: #fff0bd;
+    font-size: clamp(13px, 2vw, 21px);
+    font-weight: bold;
+    letter-spacing: 4px;
+    margin-bottom: 35px;
+}
+
+/* VICTORY BUTTON */
+
+#victory-screen button {
+    padding: 16px 38px;
+    border: 3px solid #fff0bd;
+    background: #792700;
+    color: #fff4c4;
+
+    font-family: inherit;
+    font-size: 18px;
+    font-weight: bold;
+    letter-spacing: 3px;
+
+    cursor: pointer;
+    box-shadow: 5px 5px 0 #3c1200;
+    transition: 0.2s;
+}
+
+#victory-screen button:hover {
+    background: #ffb52e;
+    color: #421600;
+    transform: translateY(-4px);
+    box-shadow: 5px 9px 0 #3c1200;
+}
+
+
+/* =========================================
+   3. GAME OVER SCREEN
+   ORANGE PIXEL PARTICLE THEME
+========================================= */
+
+.container,
+#game-over-screen {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background: radial-gradient(
+        ellipse at center,
+        #59200a 0%,
+        #2b0d04 50%,
+        #100402 100%
+    );
+
+    font-family: Arial, sans-serif;
+}
+
+/* PIXEL GRID EFFECT */
+
+.container::before,
+#game-over-screen::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+
+    background-image:
+        linear-gradient(
+            rgb(255 130 30 / 7%) 1px,
+            transparent 1px
+        ),
+        linear-gradient(
+            90deg,
+            rgb(255 130 30 / 7%) 1px,
+            transparent 1px
+        );
+
+    background-size: 8px 8px;
+    pointer-events: none;
+}
+
+/* ANIMATED PIXEL PARTICLES */
+
+#stars,
+#stars2,
+#stars3 {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    background: #ff9b35;
+
+    box-shadow:
+        100px 100px #ff7b24,
+        250px 300px #ffb347,
+        400px 150px #e85d04,
+        550px 400px #ff9b35,
+        700px 200px #ffb347,
+        850px 500px #ff7b24,
+        1000px 100px #ff9b35,
+        1150px 350px #e85d04,
+        1300px 150px #ffb347,
+        1450px 450px #ff7b24,
+        1600px 250px #ff9b35,
+        1750px 550px #ffb347,
+        200px 650px #ff7b24,
+        500px 750px #ff9b35,
+        900px 700px #e85d04,
+        1200px 800px #ffb347,
+        1500px 700px #ff7b24;
+
+    animation: moveStars 18s linear infinite;
+}
+
+#stars2 {
+    opacity: 0.6;
+    transform: scale(1.5);
+    animation-duration: 28s;
+}
+
+#stars3 {
+    opacity: 0.35;
+    transform: scale(2);
+    animation-duration: 40s;
+}
+
+@keyframes moveStars {
+    from {
+        transform: translateY(0);
+    }
+
+    to {
+        transform: translateY(-800px);
+    }
+}
+
+/* GAME OVER CONTENT */
+
+.game-over,
+#game-over-screen .end-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    padding: 25px;
+    animation: appear 1s ease-out;
+}
+
+@keyframes appear {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* GAME OVER SMALL TITLE */
+
+#game-over-screen .small-title {
+    color: #ffb347;
+    font-size: 16px;
+    letter-spacing: 8px;
+    margin-bottom: 25px;
+    font-weight: bold;
+}
+
+/* GAME OVER MAIN TITLE */
+
+.game-over h1,
+#game-over-screen h1 {
+    color: #ff8c24;
+    font-size: clamp(45px, 9vw, 100px);
+    font-weight: 900;
+    letter-spacing: 5px;
+
+    text-shadow:
+        4px 4px 0 #702000,
+        7px 7px 0 #321004,
+        0 0 25px #ff6500;
+
+    animation: gameOverGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes gameOverGlow {
+    from {
+        text-shadow:
+            4px 4px 0 #702000,
+            7px 7px 0 #321004,
+            0 0 10px #ff6500;
+    }
+
+    to {
+        text-shadow:
+            4px 4px 0 #702000,
+            7px 7px 0 #321004,
+            0 0 35px #ff9b35;
+    }
+}
+
+/* GAME OVER MESSAGE */
+
+.message,
+#game-over-screen .end-message {
+    color: #ffd19a;
+    font-size: 14px;
+    letter-spacing: 3px;
+    margin-top: 20px;
+    margin-bottom: 40px;
+}
+
+/* RESTART BUTTON */
+
+#game-over-screen button {
+    padding: 17px 45px;
+    background: #ff8c24;
+    color: #210900;
+
+    border: 3px solid #ffc16b;
+    border-radius: 3px;
+
+    font-size: 18px;
+    font-weight: 900;
+    letter-spacing: 3px;
+
+    cursor: pointer;
+    box-shadow: 0 5px 0 #8a3500;
+
+    transition: 0.2s ease;
+}
+
+#game-over-screen button:hover {
+    background: #ffb347;
+    transform: scale(1.08);
+    box-shadow: 0 0 25px #ff7600;
+}
+
+#game-over-screen button:active {
+    transform: translateY(4px);
+    box-shadow: none;
+}
+
+/* GAME OVER FOOTER */
+
+#game-over-screen .footer {
+    color: #d77a32;
+    font-size: 11px;
+    letter-spacing: 4px;
+    margin-top: 35px;
+}
+
+
+/* =========================================
+   4. RESPONSIVE DESIGN
+========================================= */
+
+@media (max-width: 768px) {
+
+    .matrix-column {
+        font-size: 14px;
+        line-height: 16px;
+        width: 18px;
+    }
+
+    #victory-screen .top-text,
+    #victory-screen .small-title {
+        font-size: 14px;
+        letter-spacing: 5px;
+    }
+
+    #victory-screen h1 {
+        letter-spacing: 3px;
+    }
+
+    #victory-screen .subtitle {
+        letter-spacing: 2px;
+    }
+
+    #victory-screen button {
+        padding: 13px 25px;
+        font-size: 15px;
+    }
+}
+
+@media (max-width: 600px) {
+
+    #game-over-screen h1 {
+        letter-spacing: 2px;
+    }
+
+    #game-over-screen .end-message {
+        font-size: 11px;
+        letter-spacing: 2px;
+    }
+
+    #game-over-screen .small-title {
+        font-size: 12px;
+    }
+}
+
+
+/* =========================================
+   5. ACCESSIBILITY
+========================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .matrix-column,
+    #stars,
+    #stars2,
+    #stars3,
+    #victory-screen h1,
+    #game-over-screen h1,
+    .game-over,
+    #game-over-screen .end-content {
+        animation: none !important;
+    }
+
+    button {
+        transition: none !important;
+    }
+}

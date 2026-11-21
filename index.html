@@ -1,0 +1,602 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Chaos Rush</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: #100505;
+            color: #ffe8b9;
+            font-family: Inter, Arial, sans-serif;
+            display: grid;
+            place-items: center;
+        }
+
+        button {
+            padding: 13px 25px;
+            border: none;
+            border-radius: 4px;
+            background: #ffc76d;
+            color: #240b0b;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        button:hover {
+            background: #ffdda0;
+            box-shadow: 0 0 20px #ffc76d55;
+        }
+
+        button:focus-visible {
+            outline: 3px solid white;
+            outline-offset: 4px;
+        }
+
+        [hidden] {
+            display: none !important;
+        }
+
+        /* START SCREEN */
+
+        #start-screen {
+            position: relative;
+            width: min(948px, 100vw);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+
+            background:
+                linear-gradient(#18070788, #18070788),
+                url("./assets/city.png") center / cover no-repeat;
+        }
+
+        .start-content {
+            text-align: center;
+            padding: 25px;
+        }
+
+        .start-content h1 {
+            font-size: clamp(42px, 8vw, 72px);
+            letter-spacing: 5px;
+            margin-bottom: 10px;
+            color: #ffe8b9;
+        }
+
+        .start-content p {
+            font-size: 17px;
+            margin-bottom: 35px;
+        }
+
+        .start-content .hint {
+            font-size: 12px;
+            margin-top: 20px;
+        }
+
+        /* GAME SCREEN */
+
+        #game-screen {
+            width: 100%;
+            min-height: 100vh;
+            padding: 15px;
+            text-align: center;
+            background: #171923;
+        }
+
+        #game-title {
+            color: #ffd166;
+            margin: 5px 0 12px;
+        }
+
+        #gameArea {
+            position: relative;
+            width: min(1000px, 95vw);
+            aspect-ratio: 16 / 9;
+            margin: 15px auto;
+            overflow: hidden;
+            border: 3px solid white;
+
+            background-image: url("./assets/game-background.jpeg");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        /* LIVES */
+
+        #lives {
+            position: absolute;
+            top: 12px;
+            left: 18px;
+            color: red;
+            font-size: 35px;
+            font-weight: bold;
+            letter-spacing: 4px;
+            z-index: 8;
+            margin: 0;
+        }
+
+        /* TIMER */
+
+        #timer {
+            position: absolute;
+            top: 12px;
+            right: 18px;
+            color: #ffd166;
+            font-size: 32px;
+            font-weight: bold;
+            z-index: 8;
+            margin: 0;
+        }
+
+        /* GROUND */
+
+        #ground {
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            height: 9%;
+            background: linear-gradient(to bottom, #75402a, #39251f);
+            border-top: 3px solid #b66a38;
+            z-index: 1;
+        }
+
+        /* PLAYER */
+
+        #player {
+            position: absolute;
+            left: 60px;
+            bottom: 9%;
+            width: 120px;
+            height: 140px;
+            z-index: 3;
+            user-select: none;
+            pointer-events: none;
+        }
+
+        #player img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            image-rendering: pixelated;
+        }
+
+        #player.sneak {
+            height: 85px;
+        }
+
+        /* PLAYER DAMAGE */
+
+        #player.damage {
+            animation: flash 0.15s steps(2, start) 5;
+        }
+
+        @keyframes flash {
+            50% {
+                opacity: 0.2;
+            }
+        }
+
+        /* MUTANT */
+
+        .chaos-mutant {
+            position: absolute;
+            bottom: 9%;
+            width: 58px;
+            height: 58px;
+            object-fit: contain;
+            z-index: 4;
+            pointer-events: none;
+        }
+
+        /* PIANO */
+
+        .chaos-piano {
+            position: absolute;
+            width: 65px;
+            height: 65px;
+            object-fit: contain;
+            z-index: 4;
+            pointer-events: none;
+        }
+
+        /* SLIPPERY FLOOR */
+
+        #gameArea.slippery-floor #ground {
+            background: linear-gradient(
+                90deg,
+                #8deaff,
+                #d9faff,
+                #8deaff
+            );
+            box-shadow: 0 -4px 12px #8deaff;
+        }
+
+        #player.slippery {
+            filter: drop-shadow(0 0 5px #8deaff);
+        }
+
+        /* CONFUSED CONTROLS */
+
+        #player.controls-reversed {
+            filter: drop-shadow(0 0 5px orange);
+        }
+
+        /* GAME OVER OVERLAY */
+
+        #gameOver {
+            display: none;
+            position: absolute;
+            inset: 0;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.65);
+            color: red;
+            font-size: clamp(24px, 5vw, 44px);
+            font-weight: bold;
+            z-index: 10;
+        }
+
+        #status {
+            min-height: 24px;
+            color: yellow;
+            font-size: 16px;
+        }
+
+        .instructions {
+            line-height: 1.8;
+            color: white;
+        }
+
+        /* GAME OVER AND VICTORY SCREENS */
+
+        #game-over-screen,
+        #victory-screen {
+            position: relative;
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            overflow: hidden;
+            padding: 20px;
+
+            background:
+                linear-gradient(#100505bb, #100505bb),
+                url("./assets/city.png") center / cover no-repeat;
+        }
+
+        .end-content {
+            padding: 30px;
+        }
+
+        .small-title {
+            color: #ffc76d;
+            font-size: 15px;
+            letter-spacing: 4px;
+        }
+
+        .end-content h1 {
+            font-size: clamp(45px, 8vw, 80px);
+            margin: 20px 0;
+            letter-spacing: 5px;
+        }
+
+        #game-over-screen h1 {
+            color: #ff4444;
+        }
+
+        #victory-screen h1 {
+            color: #ffd166;
+        }
+
+        .end-message {
+            font-size: 17px;
+            letter-spacing: 2px;
+            margin-bottom: 35px;
+        }
+
+        .footer {
+            font-size: 12px;
+            letter-spacing: 3px;
+            margin-top: 30px;
+        }
+
+        /* RESPONSIVE DESIGN */
+
+        @media (max-width: 600px) {
+            #game-screen {
+                padding: 8px 4px;
+            }
+
+            #player {
+                width: 85px;
+                height: 100px;
+            }
+
+            #player.sneak {
+                height: 65px;
+            }
+
+            #lives {
+                top: 8px;
+                left: 10px;
+                font-size: 22px;
+                letter-spacing: 2px;
+            }
+
+            #timer {
+                top: 8px;
+                right: 10px;
+                font-size: 22px;
+            }
+
+            .instructions {
+                font-size: 12px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- START SCREEN -->
+
+    <section id="start-screen">
+        <div class="start-content">
+            <h1>CHAOS RUSH</h1>
+            <p>survive if u can</p>
+
+            <button id="start-button">START</button>
+
+            <p class="hint">or press Enter</p>
+        </div>
+    </section>
+
+
+    <!-- GAME SCREEN -->
+
+    <section id="game-screen" hidden>
+
+        <h2 id="game-title">CHAOS RUSH</h2>
+
+        <div id="gameArea">
+
+            <div id="lives">♥ ♥ ♥</div>
+
+            <div id="timer">02:00</div>
+
+            <div id="player">
+                <img
+                    src="./assets/player-character1.png"
+                    alt="Player"
+                >
+            </div>
+
+            <div id="ground"></div>
+
+            <div id="gameOver">
+                PLAYER ELIMINATED!
+            </div>
+
+        </div>
+
+        <p id="status">Player is ready!</p>
+
+        <p class="instructions">
+            A / ← : Left |
+            D / → : Right |
+            Space / W / ↑ : Jump |
+            S / ↓ : Sneak
+        </p>
+
+    </section>
+
+
+    <!-- GAME OVER SCREEN -->
+
+    <section id="game-over-screen" hidden>
+
+        <div class="end-content">
+
+            <p class="small-title">CHAOS RUSH</p>
+
+            <h1>GAME OVER</h1>
+
+            <p class="end-message">
+                THE CHAOS HAS DEFEATED YOU!
+            </p>
+
+            <button id="restart-button">
+                ↻ RESTART
+            </button>
+
+            <p class="footer">BETTER LUCK NEXT TIME!</p>
+
+        </div>
+
+    </section>
+
+
+    <!-- VICTORY SCREEN -->
+
+    <section id="victory-screen" hidden>
+
+        <div class="end-content">
+
+            <p class="small-title">CHAOS RUSH</p>
+
+            <h1>VICTORY</h1>
+
+            <p class="end-message">
+                YOU SURVIVED THE CHAOS!
+            </p>
+
+            <button id="play-again-button">
+                PLAY AGAIN
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- JAVASCRIPT FILES -->
+
+    <script src="./player.js"></script>
+    <script src="./chaos.js"></script>
+
+    <script>
+
+        const startScreen =
+            document.getElementById("start-screen");
+
+        const gameScreen =
+            document.getElementById("game-screen");
+
+        const gameOverScreen =
+            document.getElementById("game-over-screen");
+
+        const victoryScreen =
+            document.getElementById("victory-screen");
+
+        const startButton =
+            document.getElementById("start-button");
+
+        const restartButton =
+            document.getElementById("restart-button");
+
+        const playAgainButton =
+            document.getElementById("play-again-button");
+
+
+        // CREATE CHAOS MANAGER
+
+        const chaosManager = new ChaosManager(
+            document.getElementById("player"),
+            document.getElementById("gameArea")
+        );
+
+
+        let gameRunning = false;
+
+
+        // START OR RESTART GAME
+
+        function startGame() {
+
+            gameRunning = true;
+
+            startScreen.hidden = true;
+            gameOverScreen.hidden = true;
+            victoryScreen.hidden = true;
+            gameScreen.hidden = false;
+
+            PlayerModule.reset();
+        }
+
+
+        // STOP CHAOS
+
+        function stopAllChaos() {
+
+            chaosManager.autoSchedule = false;
+
+            clearTimeout(chaosManager.scheduleTimer);
+
+            if (chaosManager.isActive) {
+                chaosManager.stopChaosEvent();
+            }
+        }
+
+
+        // GAME OVER
+
+        function showGameOver() {
+
+            if (!gameRunning) return;
+
+            gameRunning = false;
+
+            stopAllChaos();
+
+            gameScreen.hidden = true;
+            gameOverScreen.hidden = false;
+        }
+
+
+        // VICTORY
+
+        function showVictory() {
+
+            if (!gameRunning) return;
+
+            gameRunning = false;
+
+            stopAllChaos();
+
+            gameScreen.hidden = true;
+            victoryScreen.hidden = false;
+        }
+
+
+        // PLAYER EVENTS
+
+        document.addEventListener("player:death", showGameOver);
+
+        document.addEventListener("player:victory", showVictory);
+
+
+        // BUTTON EVENTS
+
+        startButton.addEventListener("click", startGame);
+
+        restartButton.addEventListener("click", startGame);
+
+        playAgainButton.addEventListener("click", startGame);
+
+
+        // ENTER KEY
+
+        document.addEventListener("keydown", (event) => {
+
+            if (
+                event.code === "Enter" &&
+                !startScreen.hidden &&
+                !event.repeat
+            ) {
+                startGame();
+            }
+
+        });
+
+    </script>
+
+</body>
+</html>
